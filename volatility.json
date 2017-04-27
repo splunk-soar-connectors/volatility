@@ -1,0 +1,1467 @@
+{
+    "appid"    : "34e87d47-dde6-4dc1-9974-3525d07deeeb",
+    "name"   : "Volatility",
+    "description": "This app integrates with volatility and implements multiple investigative actions like 'list open files', 'list processes', 'get process file' etc.",
+    "publisher": "Phantom",
+    "type": "forensic",
+    "main_module": "volatility_connector.pyc",
+    "app_version": "1.2.24",
+    "utctime_updated": "2017-04-14T20:35:04.000000Z",
+    "package_name": "phantom_volatility",
+    "product_vendor": "Volatility Foundation",
+    "product_name": "Volatility",
+    "product_version_regex": ".*",
+    "min_phantom_version": "2.1.467",
+    "logo": "volatility.png",
+    "license": "Copyright (c) Phantom Cyber Corporation 2015-2016",
+    "configuration": {
+    },
+    "pip_dependencies": {
+      "wheel": [
+	{"module": "volatility", "input_file": "wheels/volatility-2.4-py27-none-any.whl"},
+	{"module": "distorm3", "input_file": "wheels/distorm3-3.3.4-cp27-cp27mu-linux_x86_64.whl"}
+      ]
+    },  
+    "actions": [
+      {
+        "action": "list processes",
+        "description": "Queries the system memory dump file for a list of processes and their information",
+        "type": "investigate",
+        "identifier": "get_psinfo",
+        "read_only": true,
+        "verbose": "The action first tries to run the psscan volatility plugin, but if this plugin does not yield any data, then the pslist plugin is executed",
+        "parameters": {
+          "vault_id": {
+            "description": "Phantom Vault ID of the dump file",
+            "order": 0,
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump"],
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "table",
+          "width": 12,
+          "height": 5,
+          "title": "Process Info"
+        },
+        "output": [
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path":"action_result.data.*.name",
+            "data_type": "string",
+            "contains": ["file name"],
+            "column_name": "Name",
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.command_line",
+            "data_type": "string",
+            "column_name": "Cmd Line",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.pid",
+            "data_type": "numeric",
+            "contains": ["pid"],
+            "column_name": "PID",
+            "column_order": 2
+          },
+          {
+            "data_path":"action_result.data.*.ppid",
+            "data_type": "numeric",
+            "contains": ["pid"],
+            "column_name": "Parent PID",
+            "column_order": 3
+          },
+          {
+            "data_path":"action_result.data.*.time_created",
+            "data_type": "string",
+            "column_name": "Create Time",
+            "column_order": 4
+          },
+          {
+            "data_path":"action_result.data.*.time_exited",
+            "data_type": "string",
+            "column_name": "Exit Time",
+            "column_order": 5
+          },
+          {
+            "data_path":"action_result.data.*.path",
+            "data_type": "string",
+            "contains": ["file path"],
+            "column_name": "File Path",
+            "column_order": 6
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.summary.vol_profile_used",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path":"action_result.data.*.offset",
+            "data_type": "string"
+          },
+          {
+            "data_path":"action_result.data.*.pdb",
+            "data_type": "string"
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "get process file",
+        "description": "Extracts the process file from the memory dump",
+        "type": "investigate",
+        "identifier": "get_process_image",
+        "read_only": true,
+        "parameters": {
+          "pid": {
+            "description": "PID of the process to extract",
+            "data_type": "numeric",
+            "order": 0,
+            "contains": ["pid"],
+            "primary": true,
+            "required": true,
+            "allow_list": true
+          },
+          "ph": {
+            "data_type": "ph",
+            "order": 1
+          },
+          "vault_id": {
+            "data_type": "string",
+            "order": 2,
+            "contains": ["vault id", "os memory dump"],
+            "required": true,
+            "description": "Phantom Vault ID of the dump file"
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 3,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "table",
+          "width": 12,
+          "height": 5,
+          "title": "Get Process File"
+        },
+        "output": [
+          {
+            "data_path": "action_result.summary",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.ph",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path":"action_result.parameter.pid",
+            "data_type": "numeric",
+            "contains": ["pid"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path":"action_result.data.*.vault_id",
+            "data_type": "string",
+            "contains": ["hash", "pe file"],
+            "column_name": "Process Image Hash",
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.name",
+            "data_type": "string",
+            "column_name": "Name",
+            "contains": ["file name"],
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.size",
+            "data_type": "numeric",
+            "column_name": "Size",
+            "column_order": 2
+          },
+          {
+            "data_path":"action_result.data.*.type",
+            "data_type": "string",
+            "column_name": "Type",
+            "column_order": 3
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "list drivers",
+        "description": "Execute the driverscan volatility plugin to list loaded drivers",
+        "type": "investigate",
+        "identifier": "run_driverscan",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "description": "Phantom Vault ID of the dump file",
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "table",
+          "width": 12,
+          "height": 5,
+          "title": "Driver Scan"
+        },
+        "output": [
+          {
+            "data_path": "action_result.summary",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump"]
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path":"action_result.data.*.name",
+            "data_type": "string",
+            "column_name":"Name",
+            "contains": ["file name"],
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.driver_name",
+            "data_type": "string",
+            "column_name":"Driver Name",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.service_key",
+            "data_type": "string",
+            "column_name":"Service Key",
+            "column_order": 2
+          },
+          {
+            "data_path":"action_result.data.*.offset",
+            "data_type": "string",
+            "column_name":"Offset",
+            "column_order": 3
+          },
+          {
+            "data_path":"action_result.data.*.pointer_count",
+            "data_type": "string",
+            "column_name":"Pointer Count",
+            "column_order": 4
+          },
+          {
+            "data_path":"action_result.data.*.start",
+            "data_type": "string",
+            "column_name":"Start",
+            "column_order": 5
+          },
+          {
+            "data_path":"action_result.data.*.size",
+            "data_type": "numeric",
+            "column_name":"Size",
+            "column_order": 6
+          },
+          {
+            "data_path":"action_result.data.*.handle_count",
+            "data_type": "string",
+            "column_name":"Handle",
+            "column_order": 7
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "list mutexes",
+        "description": "Execute the mutantscan volatility plugin to list mutexes",
+        "type": "investigate",
+        "identifier": "run_mutantscan",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "description": "Phantom Vault ID of the dump file",
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "table",
+          "width": 12,
+          "height": 5,
+          "title": "Mutant Scan"
+        },
+        "output": [
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path":"action_result.data.*.name",
+            "data_type": "string",
+            "column_name":"Name",
+            "contains": ["file name"],
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.cid",
+            "data_type": "string",
+            "column_name": "Process:Thread IDs",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.pid",
+            "data_type": "string",
+            "contains": ["pid"],
+            "column_name": "PID",
+            "column_order": 2
+          },
+          {
+            "data_path":"action_result.data.*.hnd",
+            "data_type": "string",
+            "column_name": "Handle",
+            "column_order": 3
+          },
+          {
+            "data_path":"action_result.data.*.offset",
+            "data_type": "string",
+            "column_name": "Offset",
+            "column_order": 4
+          },
+          {
+            "data_path":"action_result.data.*.ptr",
+            "data_type": "string",
+            "column_name": "Pointer Count",
+            "column_order": 5
+          },
+          {
+            "data_path":"action_result.data.*.signal",
+            "data_type": "string",
+            "column_name": "Signaled",
+            "column_order": 6
+          },
+          {
+            "data_path":"action_result.data.*.thread",
+            "data_type": "string",
+            "column_name": "Owning Thread",
+            "column_order": 7
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.summary.vol_profile_used",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "list open files",
+        "description": "Execute the filescan volatility plugin to list open files",
+        "type": "investigate",
+        "identifier": "run_filescan",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "description": "Phantom Vault ID of the dump file",
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "width": 12,
+          "title": "Filescan",
+          "type": "table",
+          "height": 5
+        },
+        "output": [
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.data.*.offset",
+            "data_type": "string",
+            "column_name": "Offset",
+            "column_order": 0
+          },
+          {
+            "data_path": "action_result.data.*.ptr",
+            "data_type": "string",
+            "column_name": "Pointer #",
+            "column_order": 1
+          },
+          {
+            "data_path": "action_result.data.*.hnd",
+            "data_type": "string",
+            "column_name": "Handle #",
+            "column_order": 2
+          },
+          {
+            "data_path": "action_result.data.*.access",
+            "data_type": "string",
+            "column_name": "Access",
+            "column_order": 3
+          },
+          {
+            "data_path": "action_result.data.*.name",
+            "data_type": "string",
+            "column_name": "Name",
+            "contains": ["file name"],
+            "column_order": 4
+          },
+          {
+            "data_path": "action_result.summary.total_files",
+            "data_type": "numeric"
+          },
+          {
+            "data_path": "action_result.summary.vol_profile_used",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "summary.total_objects",
+            "data_type": "numeric"
+          },
+          {
+            "data_path": "summary.total_objects_successmalwful",
+            "data_type": "numeric"
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "find malware",
+        "description": "Execute the malfind volatility plugin to find injected code/dlls in user mode memory",
+        "type": "investigate",
+        "identifier": "run_malfind",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "description": "Phantom Vault ID of the dump file",
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "custom",
+          "width": 12,
+          "height": 5,
+          "view": "volatility_widget.malfind"
+        },
+        "output": [
+          {
+            "data_path": "action_result.summary",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path":"action_result.data.*.process",
+            "data_type":"string",
+            "contains":["file name"]
+          },
+          {
+            "data_path":"action_result.data.*.pid",
+            "data_type":"numeric",
+            "contains":["pid"]
+          },
+          {
+            "data_path":"action_result.data.*.protection",
+            "data_type":"string"
+          },
+          {
+            "data_path":"action_result.data.*.flags",
+            "data_type":"string"
+          },
+          {
+            "data_path":"action_result.data.*.address",
+            "data_type":"string"
+          },
+          {
+            "data_path":"action_result.data.*.vad_tag",
+            "data_type":"string"
+          },
+          {
+            "data_path":"action_result.data.*.buffer",
+            "data_type":"string"
+          },
+          {
+            "data_path":"action_result.data.*.disassembly",
+            "data_type":"string"
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "list sockets",
+        "description": "Execute the sockscan volatility plugin. This command is only available on Windows XP and Windows 2003 Server.",
+        "type": "investigate",
+        "identifier": "run_sockscan",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "description": "Phantom Vault ID of the dump file",
+            "primary": true,
+            "order": 0,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "order": 1,
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "versions": "EQ(*)",
+        "render": {
+          "type": "table",
+          "width": 12,
+          "height": 5,
+          "title": "Sock Scan"
+        },
+        "output": [
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path":"action_result.data.*.local_ip",
+            "data_type":"string",
+            "contains": ["ip"],
+            "column_name":"Local IP",
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.local_port",
+            "data_type":"numeric",
+            "contains": ["port"],
+            "column_name":"Local Port",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.pid",
+            "data_type":"numeric",
+            "contains": ["pid"],
+            "column_name":"PID",
+            "column_order": 2
+          },
+          {
+            "data_path":"action_result.data.*.protocol",
+            "data_type":"string",
+            "column_name":"Protocol",
+            "column_order": 3
+          },
+          {
+            "data_path":"action_result.data.*.create_time",
+            "data_type":"string",
+            "column_name":"Create Time",
+            "column_order": 4
+          },
+          {
+            "data_path":"action_result.data.*.offset",
+            "data_type":"string",
+            "column_name":"Offset",
+            "column_order": 5
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path": "action_result.summary.vol_profile_used",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          }
+        ]
+      },
+      {
+        "action": "list connections",
+        "description": "Execute the netscan or connscan volatility plugin to list network connections",
+        "verbose": "This action will execute the 'connscan' plugin for a WinXP profile or the 'netscan' plugin for Win7 and above.",
+        "type": "investigate",
+        "identifier": "list_connections",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "description": "Phantom Vault ID of the dump file",
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "versions": "EQ(*)",
+        "render": {
+          "type": "table",
+          "width": 12,
+          "height": 5,
+          "title": "Net Scan"
+        },
+        "output": [
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path":"action_result.data.*.local_ip",
+            "data_type":"string",
+            "contains": ["ip"],
+            "column_name":"Local IP",
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.local_port",
+            "data_type":"numeric",
+            "contains": ["port"],
+            "column_name":"Local Port",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.remote_ip",
+            "data_type":"string",
+            "contains": ["ip"],
+            "column_name":"Remote IP",
+            "column_order": 2
+          },
+          {
+            "data_path":"action_result.data.*.remote_port",
+            "data_type":"string",
+            "contains": ["port"],
+            "column_name":"Remote Port",
+            "column_order": 3
+          },
+          {
+            "data_path":"action_result.data.*.owner",
+            "data_type":"string",
+            "contains": ["file name"],
+            "column_name":"Owner",
+            "column_order": 4
+          },
+          {
+            "data_path":"action_result.data.*.pid",
+            "data_type":"numeric",
+            "contains": ["pid"],
+            "column_name":"PID",
+            "column_order": 5
+          },
+          {
+            "data_path":"action_result.data.*.proto",
+            "data_type":"string",
+            "column_name":"Protocol",
+            "column_order": 6
+          },
+          {
+            "data_path":"action_result.data.*.state",
+            "data_type":"string",
+            "column_name":"State",
+            "column_order": 7
+          },
+          {
+            "data_path":"action_result.data.*.create_time",
+            "data_type":"string",
+            "column_name":"Create Time",
+            "column_order": 8
+          },
+          {
+            "data_path":"action_result.data.*.offset",
+            "data_type":"string",
+            "contains": ["ip"],
+            "column_order": 9
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path": "action_result.summary.vol_profile_used",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.summary.total_connections",
+            "data_type": "numeric"
+          }
+        ]
+      },
+      {
+        "action": "get browser history",
+        "description": "Execute the iehistory volatility plugin",
+        "type": "investigate",
+        "identifier": "run_iehistory",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "description": "Phantom Vault ID of the dump file",
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "table",
+          "width": 12,
+          "height": 5,
+          "title": "IE History"
+        },
+        "output": [
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path":"action_result.data.*.url",
+            "data_type":"string",
+            "contains": ["url"],
+            "column_name":"URL",
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.location",
+            "data_type":"string",
+            "column_name":"Location",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.cache_type",
+            "data_type":"string",
+            "column_name":"Cache Type",
+            "column_order": 2
+          },
+          {
+            "data_path":"action_result.data.*.file_offset",
+            "data_type":"string",
+            "column_name":"File Offset",
+            "column_order": 3
+          },
+          {
+            "data_path":"action_result.data.*.image_filename",
+            "data_type":"string",
+            "contains": ["file name"],
+            "column_name":"Image Filename",
+            "column_order": 4
+          },
+          {
+            "data_path":"action_result.data.*.offset",
+            "data_type":"string",
+            "column_name":"Offset",
+            "column_order": 5
+          },
+          {
+            "data_path":"action_result.data.*.pid",
+            "data_type":"numeric",
+            "contains": ["pid"],
+            "column_name":"PID",
+            "column_order": 6
+          },
+          {
+            "data_path":"action_result.data.*.data_length",
+            "data_type":"numeric",
+            "column_name":"Data Length",
+            "column_order": 7
+          },
+          {
+            "data_path":"action_result.data.*.last_accessed",
+            "data_type":"string",
+            "column_name":"Last Accessed",
+            "column_order": 8
+          },
+          {
+            "data_path":"action_result.data.*.last_modified",
+            "data_type":"string",
+            "column_name":"Last Modified",
+            "column_order": 9
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path": "action_result.summary.vol_profile_used",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "list mrus",
+        "description": "Execute the shellbags volatility plugin to get a list of MRUs (Most recently used items)",
+        "type": "investigate",
+        "identifier": "run_shellbags",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "description": "Phantom Vault ID of the dump file",
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "custom",
+          "width": 12,
+          "height": 5,
+          "view": "volatility_widget.download"
+        },
+        "output": [
+          {
+            "data_path": "action_result.summary",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path":"action_result.data.*.vault_id",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump"],
+            "column_name": "Vault ID/Hash",
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.size",
+            "data_type": "numeric",
+            "column_name": "Size",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.type",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump", "volatility shellbags output"],
+            "column_name": "Type",
+            "column_order": 2
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "get timeline",
+        "description": "Execute the timeliner volatility plugin",
+        "type": "investigate",
+        "identifier": "run_timeliner",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "description": "Phantom Vault ID of the dump file",
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "custom",
+          "width": 12,
+          "height": 5,
+          "view": "volatility_widget.download"
+        },
+        "output": [
+          {
+            "data_path": "action_result.summary",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path":"action_result.data.*.vault_id",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump"],
+            "column_name": "Vault ID/Hash",
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.size",
+            "data_type": "numeric",
+            "column_name": "Size",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.type",
+            "data_type": "string",
+            "contains": ["os memory dump", "vault id", "volatility timeliner output"],
+            "column_name": "Type",
+            "column_order": 2
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "get command history",
+        "description": "Execute the cmdscan volatility plugin",
+        "type": "investigate",
+        "identifier": "run_cmdscan",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "description": "Phantom Vault ID of the dump file",
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "custom",
+          "width": 12,
+          "height": 5,
+          "view": "volatility_widget.download"
+        },
+        "output": [
+          {
+            "data_path": "action_result.summary",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path":"action_result.data.*.vault_id",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump"],
+            "column_name": "Vault ID/Hash",
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.size",
+            "data_type": "numeric",
+            "column_name": "Size",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.type",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump", "volatility cmdscan output"],
+            "column_name": "Type",
+            "column_order": 2
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "get registry key",
+        "description": "Execute the printkey volatility plugin",
+        "type": "investigate",
+        "identifier": "run_printkey",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "description": "Phantom Vault ID of the dump file",
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          },
+          "key": {
+            "description": "Registry key to extract the details of",
+            "data_type": "string",
+            "order": 2,
+            "required": true
+          },
+          "hive_address": {
+            "description": "The virtual address of the hive to search in",
+            "data_type": "string",
+            "order": 3
+          }
+        },
+        "render": {
+          "type": "custom",
+          "width": 12,
+          "height": 5,
+          "view": "volatility_widget.download"
+        },
+        "output": [
+
+          {
+            "data_path": "action_result.data.*.name",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.data.*.size",
+            "data_type": "numeric"
+          },
+          {
+            "data_path": "action_result.data.*.type",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump", "volatility printkey output"]
+          },
+          {
+            "data_path": "action_result.data.*.action",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.data.*.contains",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.data.*.vault_id",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump"]
+          },
+          {
+            "data_path": "action_result.data.*.app_run_id",
+            "data_type": "numeric"
+          },
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.summary.vol_profile_used",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.key",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump"]
+          },
+          {
+            "data_path": "action_result.parameter.hive_address",
+            "data_type": "string"
+          },
+          {
+            "data_path": "summary.total_objects",
+            "data_type": "numeric"
+          },
+          {
+            "data_path": "summary.total_objects_successful",
+            "data_type": "numeric"
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "list mfts",
+        "description": "Execute the mftparser volatility plugin to get a list of master file table entries",
+        "type": "investigate",
+        "identifier": "run_mftparser",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "description": "Phantom Vault ID of the dump file",
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "type": "custom",
+          "width": 12,
+          "height": 5,
+          "view": "volatility_widget.download"
+        },
+        "output": [
+          {
+            "data_path": "action_result.summary",
+            "data_type": "string"
+          },
+
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump" ]
+          },
+          {
+            "data_path":"action_result.data.*.vault_id",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump"],
+            "column_name": "Vault ID/Hash",
+            "column_order": 0
+          },
+          {
+            "data_path":"action_result.data.*.size",
+            "data_type": "numeric",
+            "column_name": "Size",
+            "column_order": 1
+          },
+          {
+            "data_path":"action_result.data.*.type",
+            "data_type": "string",
+            "contains": ["vault id", "os memory dump", "volatility mftparser output"],
+            "column_name": "Type",
+            "column_order": 2
+          }
+        ],
+        "versions": "EQ(*)"
+      },
+      {
+        "action": "get registry hives",
+        "description": "Execute the hivelist volatility plugin to get a list of registry hives",
+        "type": "investigate",
+        "identifier": "run_hivelist",
+        "read_only": true,
+        "parameters": {
+          "vault_id": {
+            "description": "Phantom Vault ID of the dump file",
+            "data_type": "string",
+            "order": 0,
+            "contains": ["vault id", "os memory dump"],
+            "primary": true,
+            "required": true
+          },
+          "profile": {
+            "description": "Volatility profile of the memory dump file",
+            "data_type": "string",
+            "order": 1,
+            "contains": ["volatility profile"]
+          }
+        },
+        "render": {
+          "width": 12,
+          "title": "Hivelist",
+          "type": "table",
+          "height": 5
+        },
+        "output": [
+          {
+            "data_path": "action_result.status",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.parameter.profile",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "action_result.parameter.vault_id",
+            "data_type": "string",
+            "contains": [ "vault id", "os memory dump"]
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string"
+          },
+          {
+            "data_path": "action_result.data.*.virtual",
+            "data_type": "string",
+            "column_name": "Virtual",
+            "column_order": 0
+          },
+          {
+            "data_path": "action_result.data.*.physical",
+            "data_type": "string",
+            "column_name": "Physical",
+            "column_order": 1
+          },
+          {
+            "data_path": "action_result.data.*.name",
+            "data_type": "string",
+            "column_name": "Name",
+            "contains": ["file name"],
+            "column_order": 2
+          },
+          {
+            "data_path": "action_result.summary.total_hives",
+            "data_type": "numeric"
+          },
+          {
+            "data_path": "action_result.summary.vol_profile_used",
+            "data_type": "string",
+            "contains": ["volatility profile"]
+          },
+          {
+            "data_path": "summary.total_objects",
+            "data_type": "numeric"
+          },
+          {
+            "data_path": "summary.total_objects_successful",
+            "data_type": "numeric"
+          }
+        ],
+        "versions": "EQ(*)"
+      }
+    ]
+}

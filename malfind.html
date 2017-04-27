@@ -1,0 +1,56 @@
+{% extends 'widgets/widget_template.html' %}
+{% load custom_template %}
+{% block title_color %}{{ title_color|default:'white' }}{% endblock %}
+{% block title_text_color %}{{ title_text_color|default:'black' }}{% endblock %}
+{% block body_color %}{{ body_color|default:'white' }}{% endblock %}
+{% block body_text_color %}{{ body_text_color|default:'#868686' }}{% endblock %}
+{% block custom_title_prop %}{% if title_logo %}style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"{% endif %}{% endblock %}
+{% block title1 %}Volatility{% endblock %}
+{% block title2 %}Malfind{% endblock %}
+{% block widget_content %}
+
+<!-- 
+File: ./volatility/malfind.html
+
+Copyright (c) Phantom Cyber Corporation, 2014-2016
+
+This unpublished material is proprietary to Phantom Cyber.
+All rights reserved. The methods and
+techniques described herein are considered trade secrets
+and/or confidential. Reproduction or distribution, in whole
+or in part, is forbidden except by express written permission
+of Phantom Cyber.
+-->
+
+<style>
+.pre {
+  white-space: pre;
+  font-family: monospace;
+}
+.nowrap {
+  white-space: nowrap;
+}
+</style>
+<div class="row-fluid" onwidgetload="$(this).parent().css('overflow', 'auto');" style="padding-top: 10px; color: {{ body_text_color|default:'#868686' }};">
+  {% for buffer in buffers %}
+    <div class="row">
+      <div class="col-md-6 nowrap">Process: {{ buffer.process }}</div>
+      <div class="col-md-2 nowrap">PID: {{ buffer.pid }}</div>
+      <div class="col-md-4 nowrap">Address: {{ buffer.address }}</div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 nowrap">Vad Tag: {{ buffer.vad_tag }}</div>
+      <div class="col-md-8 nowrap">Protection: {{ buffer.protection }}</div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 nowrap">Flags: {{  buffer.flags }}</div>
+    </div>
+    <br>
+    <div class="row"><div class="col-md-12 pre">{{ buffer.buffer }}</div></div>
+    <div class="row"><div class="col-md-12 pre">{{ buffer.disassembly }}</div></div>
+    {% if not forloop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+</div>
+{% endblock %}
