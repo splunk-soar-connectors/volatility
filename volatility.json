@@ -1,7 +1,7 @@
 {
     "appid"    : "34e87d47-dde6-4dc1-9974-3525d07deeeb",
     "name"   : "Volatility",
-    "description": "This app integrates with volatility and implements multiple investigative actions like 'list open files', 'list processes', 'get process file' etc.",
+    "description": "This app implements a variety of <b>investigative</b> actions on the <b>Volatility forensics analysis platform</b>.",
     "publisher": "Phantom",
     "type": "forensic",
     "main_module": "volatility_connector.pyc",
@@ -13,7 +13,7 @@
     "product_version_regex": ".*",
     "min_phantom_version": "2.1.467",
     "logo": "volatility.png",
-    "license": "Copyright (c) Phantom Cyber Corporation 2015-2016",
+    "license": "Copyright (c) Phantom Cyber Corporation 2015-2017",
     "configuration": {
     },
     "pip_dependencies": {
