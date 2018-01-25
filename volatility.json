@@ -14,7 +14,7 @@
     "min_phantom_version": "2.1.478",
     "logo": "logo_volatility.svg",
     "logo_dark": "logo_volatility_dark.svg",
-    "license": "Copyright (c) Phantom Cyber Corporation 2015-2017",
+    "license": "Copyright (c) Phantom Cyber Corporation, 2015-2018",
     "configuration": {},
     "pip_dependencies": {
         "wheel": [
