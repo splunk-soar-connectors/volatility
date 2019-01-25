@@ -1,3 +1,5 @@
-*.py
+docker-compose.yml
 dependencies*
+Makefile
+*.py
 .git*
