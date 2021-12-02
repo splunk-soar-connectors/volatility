@@ -1,0 +1,14 @@
+Splunk SOAR Volatility
+Copyright 2021 Splunk Inc.
+
+Third-party Software Attributions:
+
+Library: pudb
+Version: 2019.2
+License: MIT
+Copyright 2009 Andreas Kloeckner and contributors
+
+Library: distorm3
+Version: 3.3.4
+License: BSD 2
+Copyright 2003-2016 Gil Dabah
